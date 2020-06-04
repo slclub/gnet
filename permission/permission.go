@@ -11,6 +11,11 @@ func NewInvoke() *ChainInvoke {
 	return NewChainInvoke(invoke_box)
 }
 
+type IAccess interface {
+	GetAccess() Accesser
+	SetAccess(Accesser)
+}
+
 // apply an accesser.
 func NewAccess(name string) (Accesser, error) {
 	id, err := access_box.Registe(name)
