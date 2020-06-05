@@ -143,6 +143,8 @@ github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/slclub/gerror v0.0.0-20200528050404-175081aa4ab9 h1:UiXSZuGOdS8ZdKozLmE55wjcqttZwKXudNd0ceeL3eM=
 github.com/slclub/gerror v0.0.0-20200528050404-175081aa4ab9/go.mod h1:H4sTdpeFUJMjN6atbfOLBQfdpptVYCfrBNPp90TEPRE=
+github.com/slclub/gerror v0.0.0-20200605170533-056a97d00f25 h1:d/tZOF+7PFsSL1jDDpnw3xnQXfWr61DFboT7nEgcats=
+github.com/slclub/gerror v0.0.0-20200605170533-056a97d00f25/go.mod h1:H4sTdpeFUJMjN6atbfOLBQfdpptVYCfrBNPp90TEPRE=
 github.com/slclub/glog v0.0.7 h1:r/2kjlPox3+rUUERnb0fRBioi2okq0llkEbsjBdcR8M=
 github.com/slclub/glog v0.0.7/go.mod h1:YyfJjB65+XyJku9SbSxNtEoNh0TYC/lkKmJ0FW99TaU=
 github.com/slclub/goqueue v0.0.4 h1:2lyYr243RLUYdrcv7KCHmRwfQVjXHt86O61hav/co7A=

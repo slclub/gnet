@@ -21,6 +21,7 @@ type IRequest interface {
 	// header
 	GetHeader(key string) string
 	ContentType(args ...bool) string
+	GetRemoteAddr() string
 	//file
 	FormFile(key string) (*multipart.FileHeader, error)
 }
@@ -250,3 +251,7 @@ func (req *Request) FormFile(key string) (*multipart.FileHeader, error) {
 }
 
 // request file-------------------------------------------------------------------
+
+func (req *Request) GetRemoteAddr() string {
+	return req.http_request.RemoteAddr
+}
