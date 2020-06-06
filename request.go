@@ -1,6 +1,7 @@
 package gnet
 
 import (
+	//"fmt"
 	"github.com/slclub/link"
 	"github.com/slclub/utils"
 	"io/ioutil"
@@ -73,7 +74,9 @@ type Request struct {
 }
 
 func NewRequest() IRequest {
-	rq := &Request{}
+	rq := &Request{
+		params: make(map[string]string),
+	}
 	return rq
 }
 
@@ -193,6 +196,8 @@ func (req *Request) Reset() {
 }
 
 func (req *Request) initQuery() {
+
+	//fmt.Println("initQuery", req.query_params)
 	if req.query_params != nil {
 		return
 	}
@@ -200,7 +205,7 @@ func (req *Request) initQuery() {
 }
 
 func (req *Request) initForm() {
-	if req.form_params != nil || (req.http_request != nil && req.http_request.Method != http.MethodGet) {
+	if req.form_params != nil || (req.http_request != nil && req.http_request.Method == http.MethodGet) {
 		return
 	}
 	//size_valid := link.GetSize("form.multipart_memory", default_multipart_memory_size)
@@ -209,8 +214,10 @@ func (req *Request) initForm() {
 	req.form_params = make(url.Values)
 	if err := req.http_request.ParseMultipartForm(size_valid); err != nil {
 		link.ERROR("[FORM][MULTIPART_MEMORY][OVERFLOW]", "please check your form.multipart_memory config")
+		//fmt.Println("error:init form", req.form_params, err, "content-type:", req.http_request.Header.Get("Content-Type"))
 	}
 	req.form_params = req.http_request.PostForm
+	//fmt.Println("init form", req.form_params, req.http_request.PostForm)
 }
 
 // init and reset-----------------------------------------------------------------

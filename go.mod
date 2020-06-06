@@ -9,4 +9,5 @@ require (
 	github.com/slclub/link v0.0.0-20200605085902-9e7733b41a86
 	github.com/slclub/utils v0.0.0-20200605104419-7c88bff621a6
 	github.com/spf13/viper v1.7.0 // indirect
+	github.com/stretchr/testify v1.5.1
 )

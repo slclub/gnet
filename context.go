@@ -5,6 +5,7 @@ import (
 	"github.com/slclub/gerror"
 	"github.com/slclub/gnet/defined"
 	"github.com/slclub/gnet/permission"
+	"github.com/slclub/utils"
 	"net"
 	"net/http"
 	"strings"
@@ -170,13 +171,20 @@ func (ctx *Context) GetString(key string) (val string) {
 
 func (ctx *Context) GetInt(key string) (val int) {
 	if value, ok := ctx.Get(key); ok && value != nil {
-		val, _ = value.(int)
+		val, ok = value.(int)
+		if !ok {
+			val64, _ := utils.ForceInt64(value)
+			val = int(val64)
+		}
 	}
 	return
 }
 func (ctx *Context) GetInt64(key string) (val int64) {
 	if value, ok := ctx.Get(key); ok && value != nil {
-		val, _ = value.(int64)
+		val, ok = value.(int64)
+		if !ok {
+			val, _ = utils.ForceInt64(value)
+		}
 	}
 	return
 }
@@ -202,6 +210,8 @@ func (ctx *Context) Reset() {
 	ctx.stack_error = nil
 	ctx.ext_values = nil
 	ctx.access = nil
+	ctx.request = nil
+	ctx.response = nil
 }
 
 func (ctx *Context) ClientIP() string {
