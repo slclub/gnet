@@ -92,13 +92,13 @@ func TestContextReset(t *testing.T) {
 	assert.Nil(t, ctx.access)
 	assert.Nil(t, ctx.GetAccess())
 
-	assert.Nil(t, ctx.stack_error)
-	assert.Nil(t, ctx.GetStackError())
+	//assert.Nil(t, ctx.stack_error)
+	//assert.Nil(t, ctx.GetStackError())
 
-	assert.Nil(t, ctx.ext_values)
+	//assert.Nil(t, ctx.ext_values)
 
-	assert.Nil(t, ctx.Request())
-	assert.Nil(t, ctx.Response())
+	assert.NotNil(t, ctx.Request())
+	assert.NotNil(t, ctx.Response())
 
 	assert.Panics(t, func() { ctx.Abort() })
 	assert.Panics(t, func() { ctx.Exit() })

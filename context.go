@@ -213,11 +213,11 @@ func (ctx *Context) GetStackError() gerror.StackError {
 func (ctx *Context) Reset() {
 	ctx.Request().Reset()
 	ctx.Response().Reset()
-	ctx.stack_error = nil
-	ctx.ext_values = nil
+	ctx.stack_error = make(gerror.StackError, 0)
+	ctx.ext_values = make(map[string]interface{})
 	ctx.access = nil
-	ctx.request = nil
-	ctx.response = nil
+	//ctx.request = nil
+	//ctx.response = nil
 }
 
 func (ctx *Context) ClientIP() string {
