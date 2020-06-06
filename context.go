@@ -98,6 +98,12 @@ type Context struct {
 	access      permission.Accesser
 }
 
+func NewContext() *Context {
+	return &Context{
+		ext_values: make(map[string]interface{}),
+	}
+}
+
 // ---------------------------------Parameter ----------------------------------------
 func (ctx *Context) SetParam(key, val string) {
 	ctx.Request().SetParam(key, val)

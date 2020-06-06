@@ -40,9 +40,7 @@ func createMultipartRequest(t *testing.T) *http.Request {
 }
 
 func createTestContext(res http.ResponseWriter, req *http.Request) *Context {
-	ctx := &Context{
-		ext_values: make(map[string]interface{}),
-	}
+	ctx := NewContext()
 
 	if req == nil {
 		req, _ = http.NewRequest("GET", "/Ping/xiaoming", nil)
