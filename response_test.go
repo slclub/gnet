@@ -11,7 +11,8 @@ import (
 
 func TestResponseReset(t *testing.T) {
 
-	ctx := createTestContext(httptest.NewRecorder(), nil)
+	res := httptest.NewRecorder()
+	ctx := createTestContext(res, nil)
 	ctx.Response().Reset()
 	assert.Equal(t, -1, ctx.Response().Size())
 	assert.Equal(t, 200, ctx.Response().Status())
@@ -25,6 +26,11 @@ func TestResponseReset(t *testing.T) {
 	assert.Equal(t, 300, ctx.Response().Status())
 
 	assert.False(t, ctx.Response().Written())
+
+	ctx.Response().WriteHeader(404)
+	assert.NotEqual(t, 404, res.Code)
+	ctx.Response().Flush()
+	assert.Equal(t, 404, res.Code)
 }
 
 func TestResponseFlushHeader(t *testing.T) {
