@@ -40,6 +40,9 @@ type Contexter interface {
 	SetSameSite(st http.SameSite)
 
 	ClientIP() string
+	//
+	GetHandler() HandleFunc
+	SetHandler(HandleFunc)
 }
 
 type SetterGetter interface {
@@ -96,6 +99,7 @@ type Context struct {
 	same_site   http.SameSite
 	stack_error gerror.StackError
 	access      permission.Accesser
+	handle      HandleFunc
 }
 
 func NewContext() *Context {
@@ -239,6 +243,14 @@ func (ctx *Context) ClientIP() string {
 	}
 
 	return ""
+}
+
+func (ctx *Context) GetHandler() HandleFunc {
+	return ctx.handle
+}
+
+func (ctx *Context) SetHandler(handle HandleFunc) {
+	ctx.handle = handle
 }
 
 // Context struct *********************************************************************

@@ -104,6 +104,10 @@ func TestContextReset(t *testing.T) {
 	assert.Panics(t, func() { ctx.Exit() })
 
 	assert.Panics(t, func() { ctx.AbortStatus(404) })
+
+	ctx.SetHandler(func(c Contexter) {})
+	handle := ctx.GetHandler()
+	handle(ctx)
 }
 
 func TestContextSetterGetter(t *testing.T) {
