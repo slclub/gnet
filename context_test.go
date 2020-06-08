@@ -166,4 +166,7 @@ func TestContextSetParam(t *testing.T) {
 
 	p1, _ := ctx.Request().GetString("xiaohai")
 	assert.Equal(t, "i lov", p1)
+
+	str := ReadAll("file.go")
+	assert.True(t, len(str) > 0)
 }

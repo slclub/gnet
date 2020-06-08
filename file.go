@@ -1,7 +1,9 @@
 package gnet
 
 import (
+	"github.com/slclub/link"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"os"
 )
@@ -21,4 +23,22 @@ func SaveUploadFile(file *multipart.FileHeader, dst string) error {
 
 	_, err = io.Copy(out, src)
 	return err
+}
+
+// Read all  contents from file.
+func ReadAll(file string) string {
+	f, err := os.Open(file)
+	if err != nil {
+		link.ERROR("read file fail FILE:", file, "error:", err)
+		return ""
+	}
+	defer f.Close()
+
+	fd, err := ioutil.ReadAll(f)
+	if err != nil {
+		link.ERROR("read file fail,ioutil.ReadAll FILE:", file, "error:", err)
+		return ""
+	}
+
+	return string(fd)
 }
