@@ -48,4 +48,10 @@ func TestAnFlow(t *testing.T) {
 	id2, _ := invoke_chain.AutoSet("func2", 0)
 	ret = invoke_chain.Validate(id2, access_chain)
 	assert.True(t, ret)
+
+	ret = invoke_chain.ValidateByName("func2", access_chain)
+	assert.True(t, ret)
+
+	ret = invoke_chain.ValidateByName("func no", access_chain)
+	assert.False(t, ret)
 }

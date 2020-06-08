@@ -14,6 +14,7 @@ type ChainGetter interface {
 	GetChainScope() map[int]uint8
 	GetScopeById(id int) uint8
 	GetInvoke() BoxInvoker
+	GetId(name string) (int, bool)
 }
 
 // ---------------------------------struct -----------------------------------
@@ -42,6 +43,10 @@ func (c *Chain) Set(id int, scope uint8) (err error) {
 	return
 }
 
+func (c *Chain) GetId(name string) (int, bool) {
+	return c.box.GetId(name)
+}
+
 // ==========================================basic chain==================================
 // ==========================================invoke chain==================================
 
@@ -55,6 +60,9 @@ type InvokeSetter interface {
 type Invoker interface {
 	InvokeSetter
 	ChainGetter
+
+	// valid interface
+	Validate(id int, access AccessGetter) bool
 }
 
 var _ Invoker = &ChainInvoke{}
@@ -124,6 +132,14 @@ func (ci *ChainInvoke) Validate(id int, access AccessGetter) bool {
 	return false
 }
 
+func (ci *ChainInvoke) ValidateByName(name string, access AccessGetter) bool {
+	id, ok := ci.GetId(name)
+	if !ok {
+		return false
+	}
+	return ci.Validate(id, access)
+}
+
 // ==========================================invoke chain==================================
 // ==========================================Access chain==================================
 
@@ -131,7 +147,7 @@ func (ci *ChainInvoke) Validate(id int, access AccessGetter) bool {
 type AccessGetter interface {
 	ChainGetter
 	GetScope() uint8
-	GetId() int
+	GetAID() int
 }
 
 type AccessSetter interface {
@@ -160,7 +176,7 @@ func NewChainAccess(inv BoxInvoker, access BoxAccesser) *ChainAccess {
 	return ci
 }
 
-func (ca *ChainAccess) GetId() int {
+func (ca *ChainAccess) GetAID() int {
 	return ca.access_id
 }
 
