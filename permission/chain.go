@@ -63,6 +63,7 @@ type Invoker interface {
 
 	// valid interface
 	Validate(id int, access AccessGetter) bool
+	ValidateByName(name string, access AccessGetter) bool
 }
 
 var _ Invoker = &ChainInvoke{}
