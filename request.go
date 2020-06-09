@@ -192,7 +192,7 @@ func (req *Request) Reset() {
 	req.form_params = nil
 	req.content_type = ""
 	req.accepted = nil
-	req.params = nil
+	req.params = make(map[string]string)
 }
 
 func (req *Request) initQuery() {
