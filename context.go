@@ -8,6 +8,7 @@ import (
 	"github.com/slclub/utils"
 	"net"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -63,6 +64,10 @@ type IParameter interface {
 type IContextRequest interface {
 	Request() IRequest
 	SetRequest(IRequest) bool
+
+	// cookie
+	SetCookie(name, value string, args ...interface{})
+	Cookie(string) (string, error)
 }
 
 // response to client or other server.
@@ -147,6 +152,7 @@ func (ctx *Context) SetSameSite(st http.SameSite) {
 // ---------------------------------Aborter-------------------------------------------
 // like try catch.
 func (ctx *Context) Abort() {
+	ctx.Response().Flush()
 	gerror.Panic(defined.CODE_JUMP_CURRENT_NODE, "[USER][ABORT]")
 }
 
@@ -210,6 +216,65 @@ func (ctx *Context) SetAccess(access permission.Accesser) {
 
 // -----------------------------------access------------------------------------------
 
+// *********************************cookie ******************************************
+/** Set cookie
+ * @param	name	string
+ * @param	value	string
+ * @param	MaxAge	int			args[0]
+ * @param	path	string		args[1]
+ * @param	domain	string		args[2]
+ * @param	secure	bool		args[3]
+ * @param	http_only	bool	args[4]
+ * @return nil
+ */
+func (ctx *Context) SetCookie(name, value string, args ...interface{}) {
+	max_age := 0
+	path, domain := "", ""
+	secure, http_only := true, true
+	la := len(args)
+
+	if la >= 1 {
+		max_age, _ = args[0].(int)
+	}
+	if la >= 2 {
+		path, _ = args[1].(string)
+	}
+	if la >= 3 {
+		domain, _ = args[2].(string)
+	}
+	if la >= 4 {
+		secure, _ = args[3].(bool)
+	}
+	if la >= 5 {
+		http_only, _ = args[4].(bool)
+	}
+
+	if path == "" {
+		path = "/"
+	}
+
+	http.SetCookie(ctx.Response(), &http.Cookie{
+		Name:     name,
+		Value:    value,
+		MaxAge:   max_age,
+		Path:     path,
+		Domain:   domain,
+		SameSite: ctx.same_site,
+		Secure:   secure,
+		HttpOnly: http_only,
+	})
+}
+
+func (ctx *Context) Cookie(name string) (string, error) {
+	cookie, err := ctx.Request().GetHttpRequest().Cookie(name)
+	if err != nil {
+		return "", err
+	}
+	val, _ := url.QueryUnescape(cookie.Value)
+	return val, nil
+}
+
+// *********************************cookie ******************************************
 func (ctx *Context) GetStackError() gerror.StackError {
 	return ctx.stack_error
 }

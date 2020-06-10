@@ -177,4 +177,20 @@ func TestContextSetParam(t *testing.T) {
 
 	dir = IsDir("file.go")
 	assert.False(t, dir)
+
+}
+
+func TestContextCookie(t *testing.T) {
+	ctx := createTestContext(httptest.NewRecorder(), nil)
+	//req := ctx.Request().GetHttpRequest()
+
+	ctx.SetCookie("token", "I love you", 1, "/", "localhost", true)
+	//ctx.Response().Header().Get("Set-Cookie")
+	fmt.Println("TEST: context cookie:", ctx.Response().Header().Get("Set-Cookie"))
+
+	req := ctx.Request().GetHttpRequest()
+	req.Header.Set("Cookie", "user=boy")
+	val, err := ctx.Cookie("user")
+	assert.Nil(t, err)
+	assert.Equal(t, "boy", val)
 }
