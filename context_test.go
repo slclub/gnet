@@ -169,4 +169,12 @@ func TestContextSetParam(t *testing.T) {
 
 	str := ReadAll("file.go")
 	assert.True(t, len(str) > 0)
+
+	dir := IsDir("/tmp")
+	assert.True(t, dir)
+	dir = IsDir("/tmp/")
+	assert.True(t, dir)
+
+	dir = IsDir("file.go")
+	assert.False(t, dir)
 }

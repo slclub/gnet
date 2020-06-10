@@ -42,3 +42,17 @@ func ReadAll(file string) string {
 
 	return string(fd)
 }
+
+// check the path is floder.
+func IsDir(path string) bool {
+
+	s, err := os.Stat(path)
+
+	if err != nil {
+
+		return false
+
+	}
+
+	return s.IsDir()
+}
