@@ -54,4 +54,11 @@ func TestAnFlow(t *testing.T) {
 
 	ret = invoke_chain.ValidateByName("func no", access_chain)
 	assert.False(t, ret)
+
+	ret = invoke_chain.ValidateByName("func2", nil)
+	assert.True(t, ret)
+
+	ret = invoke_chain.ValidateByName("func no", nil)
+	assert.False(t, ret)
+
 }

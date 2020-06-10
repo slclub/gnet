@@ -116,17 +116,19 @@ func (ci *ChainInvoke) Remove(id int) (err error) {
 
 // handle execution validate.
 func (ci *ChainInvoke) Validate(id int, access AccessGetter) bool {
-	scope := access.GetScopeById(id)
-	switch scope {
-	case SCOPE_USED:
-		return true
-	case SCOPE_UNUSED:
-		return false
+	if access != nil {
+		scope := access.GetScopeById(id)
+		switch scope {
+		case SCOPE_USED:
+			return true
+		case SCOPE_UNUSED:
+			return false
+		}
 	}
 
 	// There is no id in access object.
 	// Used the chain default scope.
-	scope = ci.GetScopeById(id)
+	scope := ci.GetScopeById(id)
 	if scope == SCOPE_USED {
 		return true
 	}
