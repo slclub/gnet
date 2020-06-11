@@ -19,7 +19,12 @@ type ChainGetter interface {
 
 // ---------------------------------struct -----------------------------------
 type Chain struct {
-	box         BoxInvoker
+	// global invoke chain. all invoked handle was register in here.
+	// keep every handle has an unique id.
+	box BoxInvoker
+
+	// Current chain handle scope map.
+	// What processes a node performs and their permissions
 	keys_handle map[int]uint8
 }
 
@@ -171,6 +176,11 @@ type ChainAccess struct {
 	access_id int
 }
 
+// Create an Accesser
+// @param	inv		BoxInvoker		global invoked handle scope object.
+// @param	access	BoxAccesser		access object scope.
+// @param	Accesser				An full access object. include invoke chain scope.
+//									and scope of itself, and the his id.
 func NewChainAccess(inv BoxInvoker, access BoxAccesser) *ChainAccess {
 	ci := &ChainAccess{}
 	ci.box = inv

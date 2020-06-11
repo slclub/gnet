@@ -44,6 +44,9 @@ type Contexter interface {
 	//
 	GetHandler() HandleFunc
 	SetHandler(HandleFunc)
+
+	GetExecute() Executer
+	SetExecute(exe Executer)
 }
 
 type SetterGetter interface {
@@ -105,6 +108,7 @@ type Context struct {
 	stack_error gerror.StackError
 	access      permission.Accesser
 	handle      HandleFunc
+	exec        Executer
 }
 
 func NewContext() *Context {
@@ -310,12 +314,20 @@ func (ctx *Context) ClientIP() string {
 	return ""
 }
 
+// *********************************handle and execute ******************************************
 func (ctx *Context) GetHandler() HandleFunc {
 	return ctx.handle
 }
 
 func (ctx *Context) SetHandler(handle HandleFunc) {
 	ctx.handle = handle
+}
+
+func (ctx *Context) GetExecute() Executer {
+	return ctx.exec
+}
+func (ctx *Context) SetExecute(exe Executer) {
+	ctx.exec = exe
 }
 
 // Context struct *********************************************************************
