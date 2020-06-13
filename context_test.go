@@ -193,4 +193,5 @@ func TestContextCookie(t *testing.T) {
 	val, err := ctx.Cookie("user")
 	assert.Nil(t, err)
 	assert.Equal(t, "boy", val)
+	ctx.Redirect("/local/my")
 }

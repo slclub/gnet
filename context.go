@@ -47,6 +47,9 @@ type Contexter interface {
 
 	GetExecute() Executer
 	SetExecute(exe Executer)
+
+	//redirect
+	Redirect(location string, args ...int)
 }
 
 type SetterGetter interface {
@@ -328,6 +331,14 @@ func (ctx *Context) GetExecute() Executer {
 }
 func (ctx *Context) SetExecute(exe Executer) {
 	ctx.exec = exe
+}
+
+func (ctx Context) Redirect(location string, args ...int) {
+	code := ctx.Response().Status()
+	if len(args) > 0 {
+		code = args[0]
+	}
+	http.Redirect(ctx.Response(), ctx.Request().GetHttpRequest(), location, code)
 }
 
 // Context struct *********************************************************************
