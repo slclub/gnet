@@ -204,4 +204,9 @@ func TestContextData(t *testing.T) {
 
 	ctx.Data(map[string]interface{}{"had1": "dcd", "key1": 234}, true)
 	ctx.Echo("json")
+
+	ctx.Data(nil, true)
+	sl1 := []string{"have", "get", "method"}
+	ctx.DataAny(sl1)
+	ctx.Echo("json")
 }

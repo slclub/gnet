@@ -64,6 +64,7 @@ type SetterGetter interface {
 	GetInt64(key string) int64
 
 	Data(map[string]interface{}, ...bool) Contexter
+	DataAny(data interface{}) Contexter
 	Echo(args ...string)
 }
 
@@ -118,6 +119,7 @@ type Context struct {
 	handle      HandleFunc
 	exec        Executer
 	data        map[string]interface{}
+	data_any    interface{}
 }
 
 func NewContext() *Context {
@@ -342,6 +344,12 @@ func (ctx *Context) Data(data map[string]interface{}, cover ...bool) Contexter {
 	return ctx
 }
 
+// response any interface.
+func (ctx *Context) DataAny(data interface{}) Contexter {
+	ctx.data_any = data
+	return ctx
+}
+
 // echo data to ResponseWriter.
 func (ctx *Context) Echo(args ...string) {
 	ctype := ""
@@ -352,6 +360,11 @@ func (ctx *Context) Echo(args ...string) {
 	if coding == nil {
 		link.ERROR("[GNET][CONTEXT][ECHO]ctype[", ctype, "]coding[not get encoding object]")
 		return
+	}
+	var cdata interface{}
+	cdata = ctx.data
+	if cdata == nil {
+		cdata = ctx.data_any
 	}
 	// use decoder.ContentType write response head
 	ctx.Response().Headers("Content-Type", coding.ContentType())
