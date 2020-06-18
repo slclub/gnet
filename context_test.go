@@ -195,3 +195,13 @@ func TestContextCookie(t *testing.T) {
 	assert.Equal(t, "boy", val)
 	ctx.Redirect("/local/my")
 }
+
+func TestContextData(t *testing.T) {
+	ctx := createTestContext(httptest.NewRecorder(), nil)
+	ctx.Data(map[string]interface{}{"had": "dcd", "key": 234})
+	ctx.Echo("json")
+	ctx.Echo("xml")
+
+	ctx.Data(map[string]interface{}{"had1": "dcd", "key1": 234}, true)
+	ctx.Echo("json")
+}

@@ -4,7 +4,9 @@ import (
 	//"io"
 	"github.com/slclub/gerror"
 	"github.com/slclub/gnet/defined"
+	"github.com/slclub/gnet/encoder"
 	"github.com/slclub/gnet/permission"
+	"github.com/slclub/link"
 	"github.com/slclub/utils"
 	"net"
 	"net/http"
@@ -60,6 +62,8 @@ type SetterGetter interface {
 	GetString(key string) string
 	GetInt(key string) int
 	GetInt64(key string) int64
+
+	Data(map[string]interface{}, ...bool) Contexter
 }
 
 type IParameter interface {
@@ -112,6 +116,7 @@ type Context struct {
 	access      permission.Accesser
 	handle      HandleFunc
 	exec        Executer
+	data        map[string]interface{}
 }
 
 func NewContext() *Context {
@@ -316,6 +321,44 @@ func (ctx *Context) ClientIP() string {
 
 	return ""
 }
+
+// *********************************data convert ******************************************
+// @param	@1	data		map[string]interface{}		response data.
+// @param	@2	cover		...bool						cover response data or keep writing.
+// @return	self	Contexter.
+func (ctx *Context) Data(data map[string]interface{}, cover ...bool) Contexter {
+	if len(cover) > 0 && cover[0] {
+		ctx.data = data
+		return ctx
+	}
+
+	if ctx.data == nil {
+		ctx.data = make(map[string]interface{})
+	}
+	for k, v := range data {
+		ctx.data[k] = v
+	}
+	return ctx
+}
+
+// echo data to ResponseWriter.
+func (ctx *Context) Echo(args ...string) {
+	ctype := ""
+	if len(args) > 0 {
+		ctype = args[0]
+	}
+	coding := encoder.Coding(ctype)
+	if coding == nil {
+		link.ERROR("[GNET][CONTEXT][ECHO]ctype[", ctype, "]coding[not get encoding object]")
+		return
+	}
+	// use decoder.ContentType write response head
+	ctx.Response().Headers("Content-Type", coding.ContentType())
+	// use decoder.Decode convert ctx.data write response data.
+	ctx.Response().Write(coding.EncodeBytes(ctx.data))
+}
+
+// *********************************data convert ******************************************
 
 // *********************************handle and execute ******************************************
 func (ctx *Context) GetHandler() HandleFunc {
