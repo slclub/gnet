@@ -64,6 +64,7 @@ type SetterGetter interface {
 	GetInt64(key string) int64
 
 	Data(map[string]interface{}, ...bool) Contexter
+	Echo(args ...string)
 }
 
 type IParameter interface {
