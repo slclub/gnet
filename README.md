@@ -1,4 +1,8 @@
 # gnet
+
+[![GoTest](https://api.travis-ci.org/slclub/gnet.svg)](https://github.com/slclub/gnet/actions)
+[![codecov](https://codecov.io/gh/slclub/gnet/branch/master/graph/badge.svg)](https://codecov.io/gh/slclub/gnet)
+
 An go server web framework.
 
 ## Summary
