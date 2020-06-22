@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 type IRequest interface {
@@ -64,10 +65,12 @@ type Request struct {
 	// come from form
 	// here just quote relationship form.
 	form_params url.Values
+	form_state  bool
 
 	// come from url query params.
 	// just quote relationship.
 	query_params url.Values
+	query_state  bool
 
 	// the param come from path
 	params map[string]string
@@ -75,7 +78,8 @@ type Request struct {
 
 func NewRequest() IRequest {
 	rq := &Request{
-		params: make(map[string]string),
+		//query_params: make(url.Values, 1024),
+		form_state: false,
 	}
 	return rq
 }
@@ -89,11 +93,16 @@ func (req *Request) GetString(key string, args ...string) (value string, ret boo
 		return
 	}
 	// query form finded and return
+	req.initForm()
 	value, ret = utils.GetStringFromUrl(req.form_params, key)
 	if ret {
 		return
 	}
 	// query from query param.
+	//req.once.Do(func() {
+	req.initQuery()
+	//link.DEBUG_PRINT("[GNET][REQUEST][GetString]", "initQuery")
+	//})
 	value, ret = utils.GetStringFromUrl(req.query_params, key)
 	if ret {
 		return
@@ -108,10 +117,13 @@ func (req *Request) GetString(key string, args ...string) (value string, ret boo
 }
 
 func (req *Request) GetArray(key string, args ...[]string) ([]string, bool) {
+	req.initForm()
 	value, ret := utils.GetArrayFromUrl(req.form_params, key)
 	if ret {
 		return value, ret
 	}
+
+	req.initQuery()
 	value, ret = utils.GetArrayFromUrl(req.query_params, key)
 	if ret {
 		return value, ret
@@ -125,10 +137,14 @@ func (req *Request) GetArray(key string, args ...[]string) ([]string, bool) {
 }
 
 func (req *Request) GetMapString(key string, args ...map[string]string) (map[string]string, bool) {
+
+	req.initForm()
 	value, ret := utils.GetMapFromUrl(req.form_params, key)
 	if ret {
 		return value, ret
 	}
+
+	req.initQuery()
 	value, ret = utils.GetMapFromUrl(req.query_params, key)
 	if ret {
 		return value, ret
@@ -168,6 +184,9 @@ func (req *Request) BodyByte() ([]byte, error) {
 }
 
 func (req *Request) SetParam(key, value string) {
+	if req.params == nil {
+		req.params = make(map[string]string)
+	}
 	req.params[key] = value
 }
 
@@ -182,8 +201,8 @@ func (req *Request) GetHttpRequest() *http.Request {
 // init and reset-----------------------------------------------------------------
 func (req *Request) InitWithHttp(hr *http.Request) {
 	req.http_request = hr
-	req.initQuery()
-	req.initForm()
+	//req.initQuery()
+	//req.initForm()
 }
 
 func (req *Request) Reset() {
@@ -192,16 +211,24 @@ func (req *Request) Reset() {
 	req.form_params = nil
 	req.content_type = ""
 	req.accepted = nil
-	req.params = make(map[string]string)
+	req.params = nil
+
+	// reset query_param
+	req.query_state = false
+	//for k := range req.query_params {
+	//	delete(req.query_params, k)
+	//}
 }
 
 func (req *Request) initQuery() {
 
-	//fmt.Println("initQuery", req.query_params)
-	if req.query_params != nil {
+	if req.query_state {
 		return
 	}
+	req.query_state = true
 	req.query_params = req.http_request.URL.Query()
+	//req.urlQuery()
+	//link.DEBUG_PRINT("------request query param ", req.query_params == nil)
 }
 
 func (req *Request) initForm() {
@@ -217,7 +244,7 @@ func (req *Request) initForm() {
 		//fmt.Println("error:init form", req.form_params, err, "content-type:", req.http_request.Header.Get("Content-Type"))
 	}
 	req.form_params = req.http_request.PostForm
-	//fmt.Println("init form", req.form_params, req.http_request.PostForm)
+	//link.DEBUG_PRINT("init form", req.form_params, req.http_request.PostForm, "\n")
 }
 
 // init and reset-----------------------------------------------------------------
@@ -261,4 +288,41 @@ func (req *Request) FormFile(key string) (*multipart.FileHeader, error) {
 
 func (req *Request) GetRemoteAddr() string {
 	return req.http_request.RemoteAddr
+}
+
+func (req *Request) urlQuery() (err error) {
+	query := req.GetHttpRequest().URL.RawQuery
+	for query != "" {
+		key := query
+		if i := strings.IndexAny(key, "&;"); i >= 0 {
+			key, query = key[:i], key[i+1:]
+		} else {
+			query = ""
+		}
+		if key == "" {
+			continue
+		}
+		value := ""
+		if i := strings.Index(key, "="); i >= 0 {
+			key, value = key[:i], key[i+1:]
+		}
+		key, err1 := url.QueryUnescape(key)
+		if err1 != nil {
+			if err == nil {
+				err = err1
+			}
+			continue
+		}
+		value, err1 = url.QueryUnescape(value)
+		if err1 != nil {
+			if err == nil {
+				err = err1
+			}
+			continue
+		}
+		// here the performance is very bad.
+		req.query_params[key] = append(req.query_params[key], value)
+	}
+	//link.DEBUG_PRINT(len(req.query_params["name"]))
+	return
 }

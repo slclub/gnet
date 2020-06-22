@@ -123,9 +123,7 @@ type Context struct {
 }
 
 func NewContext() *Context {
-	return &Context{
-		ext_values: make(map[string]interface{}),
-	}
+	return &Context{}
 }
 
 // ---------------------------------Parameter ----------------------------------------
@@ -185,10 +183,16 @@ func (ctx *Context) Exit() {
 // ---------------------------------Aborter-------------------------------------------
 // ---------------------------------SetterGetter--------------------------------------
 func (ctx *Context) Set(key string, obj interface{}) {
+	if ctx.ext_values == nil {
+		ctx.ext_values = make(map[string]interface{})
+	}
 	ctx.ext_values[key] = obj
 }
 
 func (ctx *Context) Get(key string) (interface{}, bool) {
+	if ctx.ext_values == nil {
+		return nil, false
+	}
 	val, ok := ctx.ext_values[key]
 	return val, ok
 }
@@ -298,7 +302,7 @@ func (ctx *Context) Reset() {
 	ctx.Request().Reset()
 	ctx.Response().Reset()
 	ctx.stack_error = make(gerror.StackError, 0)
-	ctx.ext_values = make(map[string]interface{})
+	ctx.ext_values = nil
 	ctx.access = nil
 	//ctx.request = nil
 	//ctx.response = nil
